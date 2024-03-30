@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stopwatch</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center;
+            background-color: black;
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        .fullscreen-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background-color: transparent;
+            border: none;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .stopwatch {
+            font-size: 5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border: none;
+            border-radius: 10px;
+            background-color: white;
+            color: #333;
+            box-shadow: -2px -2px 5px rgba(0, 0, 0, 0.3), 
+                        2px 2px 5px rgba(255, 255, 255, 0.5);
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .change-bg-button {
+            background-color: transparent;
+            border: none;
+            color: white;
+            font-size: 1em;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .change-bg-button:hover {
+            color: rgba(255, 255, 255, 0.7);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body id="body">
+
+<button class="fullscreen-button" onclick="toggleFullScreen()">F</button>
+
+<div class="container">
+    <div class="stopwatch" id="stopwatch">00:00:00</div>
+    <div class="button-group">
+        <button onclick="startStop()">Start</button>
+        <button onclick="stopTimer()">Stop</button>
+        <button onclick="reset()">Reset</button>
+    </div>
+</div>
+<button class="change-bg-button" onclick="changeBackground()">Backgrounds</button>
+
+<script>
+    let startTime;
+    let elapsedTime = 0;
+    let timerInterval;
+    let isRunning = false;
+
+    function startStop() {
+        if (isRunning) {
+            clearInterval(timerInterval);
+            isRunning = false;
+        } else {
+            startTime = Date.now() - elapsedTime;
+            timerInterval = setInterval(updateTime, 10);
+            isRunning = true;
+        }
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+        isRunning = false;
+    }
+
+    function updateTime() {
+        const currentTime = Date.now();
+        elapsedTime = currentTime - startTime;
+        const formattedTime = formatTime(elapsedTime);
+        document.getElementById('stopwatch').textContent = formattedTime;
+    }
+
+    function formatTime(time) {
+        const hours = Math.floor(time / 3600000);
+        const minutes = Math.floor((time % 3600000) / 60000);
+        const seconds = Math.floor((time % 60000) / 1000);
+
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function reset() {
+        clearInterval(timerInterval);
+        elapsedTime = 0;
+        isRunning = false;
+        document.getElementById('stopwatch').textContent = '00:00:00';
+    }
+
+    function changeBackground() {
+        const newBackground = prompt('Enter the URL for the new background image:');
+        if (newBackground) {
+            document.getElementById('body').style.backgroundImage = `url(${newBackground})`;
+        } else {
+            document.getElementById('body').style.backgroundImage = 'none';
+            document.getElementById('body').style.backgroundColor = 'black';
+        }
+    }
+
+    function toggleFullScreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen();
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen(); 
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
